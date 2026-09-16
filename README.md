@@ -13,12 +13,12 @@ Plataforma para que vecinos intercambien plantas, esquejes y semillas sin usar d
 
 ---
 
-## Instrucciones de Ejecución
+##  Instrucciones de Ejecución
 
 ### 1. Instalación
 Cloná el repositorio e instalá las dependencias requeridas:
 ```bash
-git clone <url-del-repo>
+git clone https://github.com/Alejillo18/Proyecto_Backend_XP.git
 cd trueque-verde
 npm install
 ```
@@ -39,7 +39,7 @@ npm start
 
 ---
 
-## Suite de Pruebas (TDD/BDD)
+##  Suite de Pruebas (TDD/BDD)
 
 Este proyecto fue construido utilizando BDD como pilar fundamental. Las pruebas aseguran que la lógica de negocio cumple exactamente con lo esperado por las Historias de Usuario (Fase 1 y 2).
 
