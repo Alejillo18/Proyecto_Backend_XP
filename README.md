@@ -58,7 +58,7 @@ Este proyecto fue construido utilizando BDD como pilar fundamental. Las pruebas 
 
 ---
 
-## 🧠 Decisiones de Diseño basadas en Extreme Programming (XP)
+## Decisiones de Diseño basadas en Extreme Programming (XP)
 
 El desarrollo de la arquitectura y el código de este backend se guió estrictamente por las siguientes prácticas de XP:
 
