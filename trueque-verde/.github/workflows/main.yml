@@ -1,17 +1,20 @@
-name: CI
+name: Integración Continua - Trueque Verde
 
 on:
   push:
-    branches: [main]
+    branches:
+      - main
   pull_request:
-    branches: [main]
+    branches:
+      - main
 
 jobs:
   build-and-test:
+    name: Validar Código y Pruebas
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout del código
+      - name: Checkout del repositorio
         uses: actions/checkout@v4
 
       - name: Configurar Node.js
@@ -23,14 +26,11 @@ jobs:
       - name: Instalar dependencias
         run: npm ci
 
-      - name: Lint
+      - name: Ejecutar Linter (HU-15)
         run: npm run lint
 
-      - name: Compilar TypeScript (tsc)
+      - name: Compilar TypeScript / Build (HU-15)
         run: npm run build
 
-      - name: Tests unitarios (Jest)
-        run: npm run test:unit
-
-      - name: Tests de BDD (Cucumber)
-        run: npm run test:e2e
+      - name: Ejecutar Tests (Unitarios y BDD) (HU-15)
+        run: npm run test
