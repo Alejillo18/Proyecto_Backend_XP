@@ -23,8 +23,11 @@ export class UserController {
   login = async (req: Request, res: Response): Promise<void> => {
     try {
       const { email, password } = req.body;
-      const user = await this.userService.login(email, password);
-      res.status(200).json({ id: user.id, email: user.email });
+      const { user, token } = await this.userService.login(email, password); 
+      res.status(200).json({ 
+        token, 
+        user: { id: user.id, email: user.email } 
+      });
     } catch (err) {
       if (err instanceof ValidationError) {
         res.status(401).json({ error: err.message });

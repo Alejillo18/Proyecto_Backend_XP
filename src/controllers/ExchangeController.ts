@@ -5,10 +5,10 @@ import { ValidationError } from '../services/UserService';
 export class ExchangeController {
   constructor(private readonly exchangeService: ExchangeService) {}
 
-  propose = (req: Request, res: Response): void => {
+  propose = async (req: Request, res: Response): Promise<void> => {
     try {
       const { offeredPublicationId, targetPublicationId, fromUserId } = req.body;
-      const offer = this.exchangeService.propose(offeredPublicationId, targetPublicationId, fromUserId);
+      const offer = await this.exchangeService.propose(offeredPublicationId, targetPublicationId, fromUserId);
       res.status(201).json(offer);
     } catch (err) {
       if (err instanceof ValidationError) {
@@ -19,9 +19,9 @@ export class ExchangeController {
     }
   };
 
-  accept = (req: Request, res: Response): void => {
+  accept = async (req: Request, res: Response): Promise<void> => {
     try {
-      const offer = this.exchangeService.accept(req.params.id);
+      const offer = await this.exchangeService.accept(req.params.id);
       res.status(200).json(offer);
     } catch (err) {
       if (err instanceof ValidationError) {
@@ -32,9 +32,9 @@ export class ExchangeController {
     }
   };
 
-  reject = (req: Request, res: Response): void => {
+  reject = async (req: Request, res: Response): Promise<void> => {
     try {
-      const offer = this.exchangeService.reject(req.params.id);
+      const offer = await this.exchangeService.reject(req.params.id);
       res.status(200).json(offer);
     } catch (err) {
       if (err instanceof ValidationError) {

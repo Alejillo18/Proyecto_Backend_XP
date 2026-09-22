@@ -1,7 +1,15 @@
 import express, { Express } from 'express';
 import swaggerJSDoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
-import { UserRepository, PublicationRepository, ExchangeOfferRepository } from './repositories/InMemoryRepositories';
+import dotenv from 'dotenv'; // Para leer variables de entorno
+
+// 1. Importamos los repositorios de Mongo
+import { 
+  MongoUserRepository, 
+  MongoPublicationRepository, 
+  MongoExchangeOfferRepository 
+} from './repositories/MongoRepositories';
+
 import { UserService } from './services/UserService';
 import { PublicationService } from './services/PublicationService';
 import { NotificationService } from './services/NotificationService';
@@ -14,10 +22,13 @@ import { createPublicationRoutes } from './routes/PublicationRoutes';
 import { createExchangeRoutes } from './routes/ExchangeRoutes';
 import { performanceMiddleware } from './middlewares/performanceMiddleware';
 
+dotenv.config();
+
 export function createApp() {
-  const userRepository = new UserRepository();
-  const publicationRepository = new PublicationRepository();
-  const offerRepository = new ExchangeOfferRepository();
+  const userRepository = new MongoUserRepository();
+  const publicationRepository = new MongoPublicationRepository();
+  const offerRepository = new MongoExchangeOfferRepository();
+  
   const notificationService = new NotificationService();
   const userService = new UserService(userRepository);
   const publicationService = new PublicationService(publicationRepository);
@@ -44,6 +55,16 @@ export function createApp() {
         version: '1.0.0',
         description: 'Documentación de endpoints para usuarios, publicaciones e intercambios',
       },
+      components: {
+        securitySchemes: {
+          bearerAuth: {
+            type: 'http',
+            scheme: 'bearer',
+            bearerFormat: 'JWT',
+          },
+        },
+      },
+      security: [{ bearerAuth: [] }],
     },
     apis: ['./src/routes/*.ts'], 
   };

@@ -1,11 +1,12 @@
 import { Router } from 'express';
 import { ExchangeController } from '../controllers/ExchangeController';
+import { authMiddleware } from '../middlewares/authMiddleware';
 
 /**
  * @swagger
  * tags:
  *   name: Exchanges
- *   description: Gestión de ofertas y procesos de intercambio de plantas
+ *   description: Gestión de propuestas de intercambio (HU-09, HU-10)
  * 
  * components:
  *   schemas:
@@ -14,15 +15,15 @@ import { ExchangeController } from '../controllers/ExchangeController';
  *       properties:
  *         id:
  *           type: string
- *           description: ID único de la oferta
+ *           description: ID de la oferta
  *           example: "d290f1ee-6c54-4b01-90e6-d701748f0851"
- *         targetPublicationId:
- *           type: string
- *           description: ID de la publicación que se quiere obtener
- *           example: "pub_123"
  *         offeredPublicationId:
  *           type: string
- *           description: ID de la publicación que se ofrece a cambio
+ *           description: ID de la planta que se ofrece
+ *           example: "pub_123"
+ *         targetPublicationId:
+ *           type: string
+ *           description: ID de la planta que se quiere recibir
  *           example: "pub_456"
  *         fromUserId:
  *           type: string
@@ -30,12 +31,11 @@ import { ExchangeController } from '../controllers/ExchangeController';
  *           example: "usr_789"
  *         toUserId:
  *           type: string
- *           description: ID del dueño de la publicación destino
+ *           description: ID del dueño de la planta objetivo
  *           example: "usr_101"
  *         status:
  *           type: string
  *           enum: [Pendiente, Aceptada, Rechazada]
- *           description: Estado actual de la propuesta
  *           example: "Pendiente"
  */
 export function createExchangeRoutes(exchangeController: ExchangeController): Router {
@@ -43,10 +43,12 @@ export function createExchangeRoutes(exchangeController: ExchangeController): Ro
   
   /**
    * @swagger
-   * /exchanges:
+   * /exchanges/propose:
    *   post:
-   *     summary: Propone un nuevo intercambio entre dos publicaciones (HU-09)
+   *     summary: Propone un nuevo intercambio (HU-09)
    *     tags: [Exchanges]
+   *     security:
+   *       - bearerAuth: []
    *     requestBody:
    *       required: true
    *       content:
@@ -60,95 +62,73 @@ export function createExchangeRoutes(exchangeController: ExchangeController): Ro
    *             properties:
    *               offeredPublicationId:
    *                 type: string
-   *                 description: ID de tu publicación a entregar
-   *                 example: "pub_456"
    *               targetPublicationId:
    *                 type: string
-   *                 description: ID de la publicación que querés recibir
-   *                 example: "pub_123"
    *               fromUserId:
    *                 type: string
-   *                 description: ID de tu usuario
-   *                 example: "usr_789"
    *     responses:
    *       201:
-   *         description: Propuesta de intercambio creada exitosamente
+   *         description: Propuesta creada exitosamente
    *         content:
    *           application/json:
    *             schema:
    *               $ref: '#/components/schemas/ExchangeOffer'
    *       400:
-   *         description: Error de validación (ej. la publicación destino no existe o intentás intercambiar con vos mismo)
-   *         content:
-   *           application/json:
-   *             schema:
-   *               type: object
-   *               properties:
-   *                 error:
-   *                   type: string
-   *                   example: "No podés proponer un intercambio sobre tu propia publicación"
-   *       500:
-   *         description: Error interno del servidor
+   *         description: Error de validación
+   *       401:
+   *         description: No autorizado
    */
-  router.post('/', exchangeController.propose);
+  router.post('/propose', authMiddleware, exchangeController.propose);
 
   /**
    * @swagger
    * /exchanges/{id}/accept:
-   *   post:
+   *   put:
    *     summary: Acepta una propuesta de intercambio (HU-10)
-   *     description: Cambia el estado de la oferta a 'Aceptada' y reserva ambas publicaciones.
    *     tags: [Exchanges]
+   *     security:
+   *       - bearerAuth: []
    *     parameters:
    *       - in: path
    *         name: id
    *         schema:
    *           type: string
    *         required: true
-   *         description: ID de la propuesta de intercambio
-   *         example: "d290f1ee-6c54-4b01-90e6-d701748f0851"
+   *         description: ID de la oferta de intercambio
    *     responses:
    *       200:
-   *         description: Propuesta aceptada y publicaciones reservadas
-   *         content:
-   *           application/json:
-   *             schema:
-   *               $ref: '#/components/schemas/ExchangeOffer'
+   *         description: Propuesta aceptada exitosamente
    *       400:
    *         description: La propuesta no existe
-   *       500:
-   *         description: Error interno del servidor
+   *       401:
+   *         description: No autorizado
    */
-  router.post('/:id/accept', exchangeController.accept);
+  router.put('/:id/accept', authMiddleware, exchangeController.accept);
 
   /**
    * @swagger
    * /exchanges/{id}/reject:
-   *   post:
+   *   put:
    *     summary: Rechaza una propuesta de intercambio (HU-10)
-   *     description: Cambia el estado de la oferta a 'Rechazada' y notifica al creador.
    *     tags: [Exchanges]
+   *     security:
+   *       - bearerAuth: []
    *     parameters:
    *       - in: path
    *         name: id
    *         schema:
    *           type: string
    *         required: true
-   *         description: ID de la propuesta de intercambio
-   *         example: "d290f1ee-6c54-4b01-90e6-d701748f0851"
+   *         description: ID de la oferta de intercambio
    *     responses:
    *       200:
    *         description: Propuesta rechazada exitosamente
-   *         content:
-   *           application/json:
-   *             schema:
-   *               $ref: '#/components/schemas/ExchangeOffer'
    *       400:
    *         description: La propuesta no existe
-   *       500:
-   *         description: Error interno del servidor
+   *       401:
+   *         description: No autorizado
    */
-  router.post('/:id/reject', exchangeController.reject);
+  router.put('/:id/reject', authMiddleware, exchangeController.reject);
   
   return router;
 }

@@ -1,21 +1,21 @@
 import { randomUUID } from 'crypto';
 import { ExchangeOffer } from '../models';
-import { ExchangeOfferRepository, PublicationRepository } from '../repositories/InMemoryRepositories';
+import { MongoExchangeOfferRepository, MongoPublicationRepository } from '../repositories/MongoRepositories';
 import { ValidationError } from './UserService';
 import { NotificationService } from './NotificationService';
 import { PublicationService } from './PublicationService';
 
 export class ExchangeService {
   constructor(
-    private readonly offerRepository: ExchangeOfferRepository,
-    private readonly publicationRepository: PublicationRepository,
+    private readonly offerRepository: MongoExchangeOfferRepository,
+    private readonly publicationRepository: MongoPublicationRepository,
     private readonly publicationService: PublicationService,
     private readonly notificationService: NotificationService
   ) {}
 
   // HU-09: Proponer intercambio
-  propose(offeredPublicationId: string, targetPublicationId: string, fromUserId: string): ExchangeOffer {
-    const targetPublication = this.publicationRepository.findById(targetPublicationId);
+  async propose(offeredPublicationId: string, targetPublicationId: string, fromUserId: string): Promise<ExchangeOffer> {
+    const targetPublication = await this.publicationRepository.findById(targetPublicationId); // await
     if (!targetPublication) {
       throw new ValidationError('La publicación destino no existe');
     }
@@ -33,35 +33,34 @@ export class ExchangeService {
       status: 'Pendiente',
     };
 
-    this.offerRepository.save(offer);
+    await this.offerRepository.save(offer);
     this.notificationService.notify(targetPublication.ownerId, `Nueva propuesta de intercambio por tu publicación`);
     return offer;
   }
 
   // HU-10: Aceptar propuesta
-  accept(offerId: string): ExchangeOffer {
-    const offer = this.getOfferOrThrow(offerId);
+  async accept(offerId: string): Promise<ExchangeOffer> {
+    const offer = await this.getOfferOrThrow(offerId);
     offer.status = 'Aceptada';
-    this.offerRepository.update(offer);
-
-    this.publicationService.reserve(offer.targetPublicationId);
-    this.publicationService.reserve(offer.offeredPublicationId);
+    await this.offerRepository.update(offer);
+    await this.publicationService.reserve(offer.targetPublicationId);
+    await this.publicationService.reserve(offer.offeredPublicationId);
 
     return offer;
   }
 
   // HU-10: Rechazar propuesta
-  reject(offerId: string): ExchangeOffer {
-    const offer = this.getOfferOrThrow(offerId);
+  async reject(offerId: string): Promise<ExchangeOffer> {
+    const offer = await this.getOfferOrThrow(offerId);
     offer.status = 'Rechazada';
-    this.offerRepository.update(offer);
+    await this.offerRepository.update(offer);
 
     this.notificationService.notify(offer.fromUserId, 'Tu propuesta de intercambio fue rechazada');
     return offer;
   }
 
-  private getOfferOrThrow(offerId: string): ExchangeOffer {
-    const offer = this.offerRepository.findById(offerId);
+  private async getOfferOrThrow(offerId: string): Promise<ExchangeOffer> {
+    const offer = await this.offerRepository.findById(offerId); // await
     if (!offer) {
       throw new ValidationError('La propuesta no existe');
     }

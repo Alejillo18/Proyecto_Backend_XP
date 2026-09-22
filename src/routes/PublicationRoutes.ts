@@ -1,5 +1,6 @@
 import { Router } from 'express';
 import { PublicationController } from '../controllers/PublicationController';
+import { authMiddleware } from '../middlewares/authMiddleware';
 
 /**
  * @swagger
@@ -47,6 +48,8 @@ export function createPublicationRoutes(publicationController: PublicationContro
    *   post:
    *     summary: Publica una nueva planta (HU-01)
    *     tags: [Publications]
+   *     security:
+   *       - bearerAuth: []
    *     requestBody:
    *       required: true
    *       content:
@@ -83,10 +86,12 @@ export function createPublicationRoutes(publicationController: PublicationContro
    *               $ref: '#/components/schemas/Publication'
    *       400:
    *         description: Error de validación (ej. falta el nombre)
+   *       401:
+   *         description: No autorizado (Falta token o es inválido)
    *       500:
    *         description: Error interno del servidor
    */
-  router.post('/', publicationController.publish);
+  router.post('/', authMiddleware, publicationController.publish);
 
   /**
    * @swagger
@@ -131,6 +136,8 @@ export function createPublicationRoutes(publicationController: PublicationContro
    *   delete:
    *     summary: Elimina una publicación propia (HU-02)
    *     tags: [Publications]
+   *     security:
+   *       - bearerAuth: []
    *     parameters:
    *       - in: path
    *         name: id
@@ -156,10 +163,12 @@ export function createPublicationRoutes(publicationController: PublicationContro
    *         description: Publicación eliminada exitosamente
    *       400:
    *         description: Error de validación (la publicación no existe o el requesterId no es el dueño)
+   *       401:
+   *         description: No autorizado (Falta token o es inválido)
    *       500:
    *         description: Error interno del servidor
    */
-  router.delete('/:id', publicationController.delete);
+  router.delete('/:id', authMiddleware, publicationController.delete);
   
   return router;
 }

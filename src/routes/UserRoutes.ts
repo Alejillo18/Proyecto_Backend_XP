@@ -5,25 +5,25 @@ import { UserController } from '../controllers/UserController';
  * @swagger
  * tags:
  *   name: Users
- *   description: Gestión de usuarios y autenticación (HU-05, HU-06, HU-14)
+ *   description: Gestión de usuarios y autenticación
  * 
  * components:
  *   schemas:
- *     UserResponse:
+ *     User:
  *       type: object
  *       properties:
  *         id:
  *           type: string
  *           description: ID único del usuario
- *           example: "d290f1ee-6c54-4b01-90e6-d701748f0851"
+ *           example: "usr_123"
  *         email:
  *           type: string
- *           description: Email del usuario
- *           example: "alejo@email.com"
+ *           description: Correo electrónico
+ *           example: "juan@ejemplo.com"
  *         barrio:
  *           type: string
- *           description: Barrio del usuario
- *           example: "Centro"
+ *           description: Barrio de residencia
+ *           example: "Alta Córdoba"
  */
 export function createUserRoutes(userController: UserController): Router {
   const router = Router();
@@ -32,7 +32,7 @@ export function createUserRoutes(userController: UserController): Router {
    * @swagger
    * /users/register:
    *   post:
-   *     summary: Registra un nuevo usuario (HU-05)
+   *     summary: Registra un nuevo usuario
    *     tags: [Users]
    *     requestBody:
    *       required: true
@@ -47,43 +47,25 @@ export function createUserRoutes(userController: UserController): Router {
    *             properties:
    *               email:
    *                 type: string
-   *                 example: "alejo@email.com"
+   *                 example: "usuario@ejemplo.com"
    *               password:
    *                 type: string
    *                 description: Mínimo 8 caracteres
    *                 example: "secreta123"
    *               barrio:
    *                 type: string
-   *                 example: "Centro"
+   *                 example: "General Paz"
    *     responses:
    *       201:
    *         description: Usuario registrado exitosamente
    *         content:
    *           application/json:
    *             schema:
-   *               $ref: '#/components/schemas/UserResponse'
+   *               $ref: '#/components/schemas/User'
    *       400:
-   *         description: Error de validación (ej. la contraseña tiene menos de 8 caracteres)
-   *         content:
-   *           application/json:
-   *             schema:
-   *               type: object
-   *               properties:
-   *                 error:
-   *                   type: string
-   *                   example: "La contraseña debe tener al menos 8 caracteres"
+   *         description: Error de validación (ej. contraseña corta)
    *       409:
-   *         description: Conflicto, el email ya está registrado
-   *         content:
-   *           application/json:
-   *             schema:
-   *               type: object
-   *               properties:
-   *                 error:
-   *                   type: string
-   *                   example: "El email ya está registrado"
-   *       500:
-   *         description: Error interno del servidor
+   *         description: Conflicto (email ya registrado)
    */
   router.post('/register', userController.register);
 
@@ -91,7 +73,7 @@ export function createUserRoutes(userController: UserController): Router {
    * @swagger
    * /users/login:
    *   post:
-   *     summary: Inicia sesión (HU-06)
+   *     summary: Inicia sesión y obtiene un token JWT
    *     tags: [Users]
    *     requestBody:
    *       required: true
@@ -105,36 +87,26 @@ export function createUserRoutes(userController: UserController): Router {
    *             properties:
    *               email:
    *                 type: string
-   *                 example: "alejo@email.com"
+   *                 example: "usuario@ejemplo.com"
    *               password:
    *                 type: string
    *                 example: "secreta123"
    *     responses:
    *       200:
-   *         description: Login exitoso
+   *         description: Inicio de sesión exitoso
    *         content:
    *           application/json:
    *             schema:
    *               type: object
    *               properties:
-   *                 id:
+   *                 token:
    *                   type: string
-   *                   example: "d290f1ee-6c54-4b01-90e6-d701748f0851"
-   *                 email:
-   *                   type: string
-   *                   example: "alejo@email.com"
+   *                   description: Token JWT para usar en rutas protegidas
+   *                   example: "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+   *                 user:
+   *                   $ref: '#/components/schemas/User'
    *       401:
-   *         description: Credenciales incorrectas
-   *         content:
-   *           application/json:
-   *             schema:
-   *               type: object
-   *               properties:
-   *                 error:
-   *                   type: string
-   *                   example: "Email o contraseña incorrectos"
-   *       500:
-   *         description: Error interno del servidor
+   *         description: Email o contraseña incorrectos
    */
   router.post('/login', userController.login);
   

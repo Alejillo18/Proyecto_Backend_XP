@@ -5,10 +5,10 @@ import { ValidationError } from '../services/UserService';
 export class PublicationController {
   constructor(private readonly publicationService: PublicationService) {}
 
-  publish = (req: Request, res: Response): void => {
+  publish = async (req: Request, res: Response): Promise<void> => {
     try {
-      const { plantName, ownerId, barrio, photo } = req.body;
-      const publication = this.publicationService.publish(plantName, ownerId, barrio, photo);
+      const { plantName, ownerId, barrio, photo } = req.body; 
+      const publication = await this.publicationService.publish(plantName, ownerId, barrio, photo);
       res.status(201).json(publication);
     } catch (err) {
       if (err instanceof ValidationError) {
@@ -19,10 +19,10 @@ export class PublicationController {
     }
   };
 
-  search = (req: Request, res: Response): void => {
+  search = async (req: Request, res: Response): Promise<void> => {
     const text = (req.query.q as string) || '';
     const barrio = req.query.barrio as string | undefined;
-    const results = this.publicationService.search(text, barrio);
+    const results = await this.publicationService.search(text, barrio);
 
     if (results.length === 0) {
       res.status(200).json({ message: 'No se encontraron plantas', results: [] });
@@ -32,10 +32,10 @@ export class PublicationController {
     res.status(200).json({ results });
   };
 
-  delete = (req: Request, res: Response): void => {
+  delete = async (req: Request, res: Response): Promise<void> => {
     try {
       const requesterId = req.body.requesterId;
-      this.publicationService.delete(req.params.id, requesterId);
+      await this.publicationService.delete(req.params.id, requesterId);
       res.status(204).send();
     } catch (err) {
       if (err instanceof ValidationError) {
