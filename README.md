@@ -44,7 +44,7 @@ npm start
 
 Todos los endpoints de la API están documentados visualmente mediante Swagger. Una vez que el entorno de desarrollo o producción esté levantado, podés acceder a la interfaz interactiva para explorar los esquemas, requerimientos y probar las rutas directamente desde el navegador.
 
-*   **Ruta de acceso:** [http://localhost:3000/api-docs](http://localhost:3000/api-docs) (ajustá el puerto si es necesario).
+*   **Ruta de acceso:** [http://localhost:3000/api-docs](http://localhost:3000/api-docs).
 
 ---
 
