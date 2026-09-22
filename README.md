@@ -6,6 +6,7 @@ Plataforma para que vecinos intercambien plantas, esquejes y semillas sin usar d
 
 *   **Node.js & Express:** Framework web para la creación de la API REST.
 *   **TypeScript:** Modo estricto activado para mayor seguridad de tipos.
+*   **Swagger:** Documentación interactiva de la API (`swagger-jsdoc` y `swagger-ui-express`).
 *   **Cucumber:** Pruebas End-to-End y BDD utilizando sintaxis Gherkin.
 *   **Jest:** Pruebas unitarias de los servicios.
 *   **Bcrypt:** Hashing y seguridad de contraseñas.
@@ -36,6 +37,14 @@ Para compilar el código TypeScript a JavaScript estricto:
 npm run build
 npm start
 ```
+
+---
+
+##  Documentación de la API (Swagger)
+
+Todos los endpoints de la API están documentados visualmente mediante Swagger. Una vez que el entorno de desarrollo o producción esté levantado, podés acceder a la interfaz interactiva para explorar los esquemas, requerimientos y probar las rutas directamente desde el navegador.
+
+*   **Ruta de acceso:** [http://localhost:3000/api-docs](http://localhost:3000/api-docs) (ajustá el puerto si es necesario).
 
 ---
 
