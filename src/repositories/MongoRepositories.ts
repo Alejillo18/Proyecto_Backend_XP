@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { User, Publication, ExchangeOffer } from '../models';
 import { UserModel, PublicationModel, ExchangeOfferModel } from '../models/MongoModels';
 
