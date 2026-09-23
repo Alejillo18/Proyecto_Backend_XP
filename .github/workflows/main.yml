@@ -12,6 +12,12 @@ jobs:
   build-and-test:
     name: Validar Código y Pruebas
     runs-on: ubuntu-latest
+    
+
+    env:
+      PORT: 3000
+      MONGO_URI: mongodb://localhost:27017/ci-test
+      JWT_SECRET: secreto_super_seguro_para_github_actions
 
     steps:
       - name: Checkout del repositorio
