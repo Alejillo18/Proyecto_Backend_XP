@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { UserService, ValidationError, ConflictError } from './UserService';
 
 describe('UserService', () => {

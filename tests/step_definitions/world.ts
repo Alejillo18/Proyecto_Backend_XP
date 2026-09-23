@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { setWorldConstructor, World, IWorldOptions } from '@cucumber/cucumber';
 import { AppContainer } from '../../src/app';
 import { Publication, User, ExchangeOffer } from '../../src/models';
