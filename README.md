@@ -98,3 +98,105 @@ El desarrollo de la arquitectura y el código de este backend se guió estrictam
 
 4.  **Integración Continua (CI):**
     *   Se configuró un pipeline automatizado (`.github/workflows/main.yml`). En cada `push` o `pull request` a la rama principal, el entorno ejecuta automáticamente el linter, el build y toda la suite de pruebas garantizando la estabilidad del código.
+
+
+
+
+
+## TDD: Primero los test fallan ⛔
+
+ruta al archivo> npm run test
+
+> trueque-verde@1.0.0 test
+> npm run test:unit && npm run test:e2e
+
+
+> ruta archivo
+> jest
+
+ FAIL  src/services/UserService.test.ts
+  ● Test suite failed to run
+                                                                                                                                                                                  
+    src/services/UserService.test.ts:10:31 - error TS2345: Argument of type 'UserRepository' is not assignable to parameter of type 'MongoUserRepository'.
+      The types returned by 'findByEmail(...)' are incompatible between these types.
+        Type 'User | undefined' is not assignable to type 'Promise<User | null>'.
+          Type 'undefined' is not assignable to type 'Promise<User | null>'.
+
+    10     service = new UserService(repository);
+                                     ~~~~~~~~~~
+    src/services/UserService.test.ts:31:17 - error TS2339: Property 'email' does not exist on type '{ user: User; token: string; }'.
+
+    31     expect(user.email).toBe('a@correo.com');
+                       ~~~~~
+
+Test Suites: 1 failed, 1 total                                                                                                                                                    
+Tests:       0 total                                                                                                                                                              
+Snapshots:   0 total
+Time:        4.683 s
+Ran all test suites.
+
+npm ERR! Windows_NT 10.0.26200
+npm ERR! argv "C:\\Program Files\\nodejs\\node.exe" "ruta\node_modules\\npm\\bin\\npm-cli.js" "run" "test:unit"
+npm ERR! node v22.16.0
+npm ERR! npm  v2.15.12
+npm ERR! code ELIFECYCLE
+npm ERR! trueque-verde@1.0.0 test:unit: `jest`
+npm ERR! Exit status 1
+npm ERR!
+npm ERR! Failed at the trueque-verde@1.0.0 test:unit script 'jest'.
+npm ERR! This is most likely a problem with the trueque-verde package,
+npm ERR! not with npm itself.
+npm ERR! Tell the author that this fails on your system:
+npm ERR!     jest
+npm ERR! You can get information on how to open an issue for this project with:
+npm ERR!     npm bugs trueque-verde
+npm ERR! Or if that isn't available, you can get their info via:
+npm ERR!
+npm ERR!     npm owner ls trueque-verde
+npm ERR! There is likely additional logging output above.
+
+npm ERR! Please include the following file with any support request:
+npm ERR!     ruta_Archivo\npm-debug.log
+
+
+
+
+## Luego de realizar la implementacion del codigo minimo para que se puedan superar dichos test ✅✅✅
+
+PS Ruta_Archivo> npm run test
+
+> trueque-verde@1.0.0 test
+> npm run test:unit && npm run test:e2e
+
+
+> trueque-verde@1.0.0 test:ruta_Archivo  
+> jest
+
+ PASS  src/services/UserService.test.ts
+  UserService
+    √ registra un usuario válido y guarda la contraseña hasheada (no en texto plano) (64 ms)                                                                                      
+    √ rechaza contraseñas de menos de 8 caracteres (1 ms)                                                                                                                         
+    √ rechaza el registro si el email ya existe (53 ms)                                                                                                                           
+    √ permite el login con credenciales correctas y devuelve un token (110 ms)                                                                                                    
+    √ rechaza el login con contraseña incorrecta (105 ms)                                                                                                                         
+                                                                                                                                                                                  
+Test Suites: 1 passed, 1 total                                                                                                                                                    
+Tests:       5 passed, 5 total                                                                                                                                                    
+Snapshots:   0 total
+Time:        2.117 s
+Ran all test suites.
+
+> trueque-verde@1.0.0 test:e2e ruta_Archivo     
+> cucumber-js --require-module ts-node/register --require tests/step_definitions/**/*.ts features/**/*.feature
+
+You have specified paths in both your configuration file and as CLI arguments.
+In a future major version, the CLI argument will override the configuration file instead of being merged.
+To prepare for this change, see https://github.com/cucumber/cucumber-js/blob/main/docs/deprecations.md
+  Current result:     features/**/*.feature, features/**/*.feature
+  Future result:      features/**/*.feature
+(node:5108) ExperimentalWarning: glob is an experimental feature and might change at any time
+(Use `node --trace-warnings ...` to show where the warning was created)
+
+14 scenarios (14 passed)✅
+52 steps (52 passed)✅
+0m 0.950s (0m 0.902s executing your code)

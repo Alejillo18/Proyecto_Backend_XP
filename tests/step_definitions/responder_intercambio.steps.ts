@@ -1,3 +1,4 @@
+// responder_Intercambio.steps.ts
 import { Given, When, Then } from '@cucumber/cucumber';
 import { strict as assert } from 'assert';
 import { TruequeVerdeWorld } from './world';
@@ -13,26 +14,26 @@ Given(
     this.usersByName.set(fromName, fromUser);
     this.usersByName.set(toName, toUser);
 
-    const offeredPublication = this.container.publicationService.publish(offeredPlant, fromUser.id, 'Belgrano');
-    const targetPublication = this.container.publicationService.publish(targetPlant, toUser.id, 'Belgrano');
+    const offeredPublication = await this.container.publicationService.publish(offeredPlant, fromUser.id, 'Belgrano');
+    const targetPublication = await this.container.publicationService.publish(targetPlant, toUser.id, 'Belgrano');
     this.publicationsByPlant.set(offeredPlant, offeredPublication);
     this.publicationsByPlant.set(targetPlant, targetPublication);
 
-    this.lastOffer = this.container.exchangeService.propose(offeredPublication.id, targetPublication.id, fromUser.id);
+    this.lastOffer = await this.container.exchangeService.propose(offeredPublication.id, targetPublication.id, fromUser.id);
   }
 );
 
-When('{string} acepta la propuesta', function (this: TruequeVerdeWorld, _name: string) {
-  this.lastOffer = this.container.exchangeService.accept(this.lastOffer!.id);
+When('{string} acepta la propuesta', async function (this: TruequeVerdeWorld, _name: string) {
+  this.lastOffer = await this.container.exchangeService.accept(this.lastOffer!.id);
 });
 
-When('{string} rechaza la propuesta', function (this: TruequeVerdeWorld, _name: string) {
-  this.lastOffer = this.container.exchangeService.reject(this.lastOffer!.id);
+When('{string} rechaza la propuesta', async function (this: TruequeVerdeWorld, _name: string) {
+  this.lastOffer = await this.container.exchangeService.reject(this.lastOffer!.id);
 });
 
-Then('el estado de la publicación {string} debe ser {string}', function (this: TruequeVerdeWorld, plantName: string, status: string) {
-  const publication = this.container.publicationRepository.findById(this.publicationsByPlant.get(plantName)!.id)!;
-  assert.equal(publication.status, status);
+Then('el estado de la publicación {string} debe ser {string}', async function (this: TruequeVerdeWorld, plantName: string, status: string) {
+  const publication = await this.container.publicationRepository.findById(this.publicationsByPlant.get(plantName)!.id);
+  assert.equal(publication!.status, status);
 });
 
 Then('el estado de la propuesta debe ser {string}', function (this: TruequeVerdeWorld, status: string) {

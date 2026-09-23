@@ -1,13 +1,23 @@
 import { UserService, ValidationError, ConflictError } from './UserService';
-import { UserRepository } from '../repositories/InMemoryRepositories';
 
 describe('UserService', () => {
-  let repository: UserRepository;
+  let mockRepository: any;
   let service: UserService;
 
   beforeEach(() => {
-    repository = new UserRepository();
-    service = new UserService(repository);
+    const users: any[] = [];
+
+    mockRepository = {
+      findByEmail: async (email: string) => {
+        return users.find(u => u.email === email) || null;
+      },
+      save: async (user: any) => {
+        users.push(user);
+        return user;
+      }
+    };
+
+    service = new UserService(mockRepository as any);
   });
 
   it('registra un usuario válido y guarda la contraseña hasheada (no en texto plano)', async () => {
@@ -25,10 +35,13 @@ describe('UserService', () => {
     await expect(service.register('a@correo.com', 'otraClave123', 'Palermo')).rejects.toBeInstanceOf(ConflictError);
   });
 
-  it('permite el login con credenciales correctas', async () => {
+  it('permite el login con credenciales correctas y devuelve un token', async () => {
     await service.register('a@correo.com', 'contraseñaValida123', 'Belgrano');
-    const user = await service.login('a@correo.com', 'contraseñaValida123');
+    const { user, token } = await service.login('a@correo.com', 'contraseñaValida123');
+    
     expect(user.email).toBe('a@correo.com');
+    expect(token).toBeDefined();
+    expect(typeof token).toBe('string');
   });
 
   it('rechaza el login con contraseña incorrecta', async () => {

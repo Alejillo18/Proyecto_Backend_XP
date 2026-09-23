@@ -1,3 +1,4 @@
+
 import { Given, When, Then } from '@cucumber/cucumber';
 import { strict as assert } from 'assert';
 import { TruequeVerdeWorld } from './world';
@@ -13,41 +14,41 @@ Given(
 
 When(
   '{string} publica la planta {string} con foto {string} en el barrio {string}',
-  function (this: TruequeVerdeWorld, name: string, plantName: string, photo: string, barrio: string) {
+  async function (this: TruequeVerdeWorld, name: string, plantName: string, photo: string, barrio: string) {
     const owner = this.usersByName.get(name)!;
-    const publication = this.container.publicationService.publish(plantName, owner.id, barrio, photo);
+    const publication = await this.container.publicationService.publish(plantName, owner.id, barrio, photo);
     this.publicationsByPlant.set(plantName, publication);
   }
 );
 
 When(
   '{string} publica la planta {string} sin foto en el barrio {string}',
-  function (this: TruequeVerdeWorld, name: string, plantName: string, barrio: string) {
+  async function (this: TruequeVerdeWorld, name: string, plantName: string, barrio: string) {
     const owner = this.usersByName.get(name)!;
-    const publication = this.container.publicationService.publish(plantName, owner.id, barrio, undefined);
+    const publication = await this.container.publicationService.publish(plantName, owner.id, barrio, undefined);
     this.publicationsByPlant.set(plantName, publication);
   }
 );
 
 When(
   '{string} intenta publicar una planta sin nombre en el barrio {string}',
-  function (this: TruequeVerdeWorld, name: string, barrio: string) {
+  async function (this: TruequeVerdeWorld, name: string, barrio: string) {
     const owner = this.usersByName.get(name)!;
     try {
-      this.container.publicationService.publish('', owner.id, barrio, undefined);
+      await this.container.publicationService.publish('', owner.id, barrio, undefined);
     } catch (err) {
       this.lastError = err as Error;
     }
   }
 );
 
-Then('la publicación de {string} debe estar visible en el listado', function (this: TruequeVerdeWorld, plantName: string) {
-  const all = this.container.publicationService.getAll();
+Then('la publicación de {string} debe estar visible en el listado', async function (this: TruequeVerdeWorld, plantName: string) {
+  const all = await this.container.publicationService.getAll();
   assert.ok(all.some((p) => p.plantName === plantName));
 });
 
-Then('el estado de la publicación debe ser {string}', function (this: TruequeVerdeWorld, status: string) {
-  const publications = this.container.publicationService.getAll();
+Then('el estado de la publicación debe ser {string}', async function (this: TruequeVerdeWorld, status: string) {
+  const publications = await this.container.publicationService.getAll();
   const last = publications[publications.length - 1];
   assert.equal(last.status, status);
 });

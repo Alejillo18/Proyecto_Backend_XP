@@ -1,3 +1,4 @@
+
 import { Given, When, Then } from '@cucumber/cucumber';
 import { strict as assert } from 'assert';
 import { TruequeVerdeWorld } from './world';
@@ -9,19 +10,19 @@ Given('{string} publicó la planta {string}', async function (this: TruequeVerde
     owner = await this.container.userService.register(email, 'contraseñaValida123', 'Belgrano');
     this.usersByName.set(name, owner);
   }
-  const publication = this.container.publicationService.publish(plantName, owner.id, 'Belgrano');
+  const publication = await this.container.publicationService.publish(plantName, owner.id, 'Belgrano');
   this.publicationsByPlant.set(plantName, publication);
 });
 
 When(
   '{string} propone intercambiar su {string} por el {string} de {string}',
-  function (this: TruequeVerdeWorld, fromName: string, offeredPlant: string, targetPlant: string, _toName: string) {
+  async function (this: TruequeVerdeWorld, fromName: string, offeredPlant: string, targetPlant: string, _toName: string) {
     const fromUser = this.usersByName.get(fromName)!;
     const offeredPublication = this.publicationsByPlant.get(offeredPlant)!;
     const targetPublication = this.publicationsByPlant.get(targetPlant)!;
 
     try {
-      this.lastOffer = this.container.exchangeService.propose(
+      this.lastOffer = await this.container.exchangeService.propose(
         offeredPublication.id,
         targetPublication.id,
         fromUser.id
@@ -34,11 +35,11 @@ When(
 
 When(
   '{string} intenta proponer un intercambio sobre su propio {string}',
-  function (this: TruequeVerdeWorld, name: string, plantName: string) {
+  async function (this: TruequeVerdeWorld, name: string, plantName: string) {
     const user = this.usersByName.get(name)!;
     const publication = this.publicationsByPlant.get(plantName)!;
     try {
-      this.lastOffer = this.container.exchangeService.propose(publication.id, publication.id, user.id);
+      this.lastOffer = await this.container.exchangeService.propose(publication.id, publication.id, user.id);
     } catch (err) {
       this.lastError = err as Error;
     }
